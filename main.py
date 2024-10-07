@@ -11,6 +11,7 @@ class PluginTemplate(PluginBase):
     def __init__(self):
         super().__init__()
 
+        self.lm = self.locale_manager
         ## Register actions
         self.simple_action_holder = ActionHolder(
             plugin_base = self,
@@ -21,7 +22,7 @@ class PluginTemplate(PluginBase):
         self.add_action_holder(self.simple_action_holder)
 
         settings = self.get_settings()
-        host = settings.get("BRIDGE_HOST", "")
+        host = settings.get("BRIDGE_IP", "")
         username = settings.get("BRIDGE_USER", "")
 
         self.backend = HueBackend()

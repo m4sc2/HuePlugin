@@ -25,4 +25,6 @@ class HueBackend:
         """
         self._bridge_ip = host
         self._bridge_username = username
+        if self._bridge_ip == "": return
+        if self._bridge_username == "": return
         self._bridge = Bridge(ip=self._bridge_ip, username=self._bridge_username)

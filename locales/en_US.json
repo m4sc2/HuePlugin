@@ -1,0 +1,5 @@
+{
+    "plugin.name": "Hue",
+    "hue.gateway.ip.title": "IP",
+    "hue.gateway.username.title": "Username"
+}
