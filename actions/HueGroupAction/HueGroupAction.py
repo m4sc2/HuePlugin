@@ -9,20 +9,22 @@ import os
 
 # Import gtk modules - used for the config rows
 import gi
+
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw
 
-class SimpleAction(ActionBase):
+
+class HueGroupAction(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
     def on_ready(self) -> None:
         icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
         self.set_media(media_path=icon_path, size=0.75)
-        
+
     def on_key_down(self) -> None:
-        print("Key down")
-    
+        print("Key down 2")
+
     def on_key_up(self) -> None:
         print("Key up")
