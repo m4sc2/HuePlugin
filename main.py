@@ -2,10 +2,10 @@
 from src.backend.PluginManager.ActionHolder import ActionHolder
 from src.backend.PluginManager.PluginBase import PluginBase
 from .actions.HueGroupAction.HueGroupAction import HueGroupAction
+from .backend.hue_assist import HueBackend
+
 
 # Import actions
-
-
 
 class PluginTemplate(PluginBase):
     def __init__(self):
@@ -19,6 +19,13 @@ class PluginTemplate(PluginBase):
             action_name = "Hue Group Action",
         )
         self.add_action_holder(self.simple_action_holder)
+
+        settings = self.get_settings()
+        host = settings.get("BRIDGE_HOST", "")
+        username = settings.get("BRIDGE_USER", "")
+
+        self.backend = HueBackend()
+        self.backend.set_connection_details(host, username)
 
         # Register plugin
         self.register(
