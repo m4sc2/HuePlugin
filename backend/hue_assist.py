@@ -32,7 +32,23 @@ class HueBackend(BackendBase):
         self._bridge = Bridge(ip=self._bridge_ip, username=self._bridge_username)
         log.info(self._bridge.get_api())
 
-    def get_test(self) -> str:
+    @staticmethod
+    def get_test() -> str:
         return "test"
+
+    def is_connected(self) -> bool:
+        try:
+            self._bridge.connect()
+            return True
+        except Exception as e:
+            return False
+
+    def get_groups(self) -> list:
+        for group in self._bridge.groups :
+            log.info(group.name + str(group.on))
+            self._bridge.set_group(group.group_id, 'on', True)
+        return self._bridge.groups
+
+
 
 backend = HueBackend()

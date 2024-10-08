@@ -33,6 +33,7 @@ class HueGroupAction(ActionBase):
     def on_key_down(self) -> None:
         log.info("Key down")
         log.info(self.plugin_base.backend.get_test())
+        self.plugin_base.backend.get_groups()
 
     def on_key_up(self) -> None:
         log.info("Key up")
