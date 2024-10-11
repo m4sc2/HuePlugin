@@ -7,7 +7,7 @@ from .actions.HueGroupAction.HueGroupAction import HueGroupAction
 
 # Import actions
 
-class PluginTemplate(PluginBase):
+class HuePlugin(PluginBase):
     def __init__(self):
         super().__init__()
         self.lm = self.locale_manager
