@@ -1,5 +1,6 @@
 {
     "plugin.name": "Hue",
     "hue.gateway.ip.title": "IP",
-    "hue.gateway.username.title": "Username"
+    "hue.gateway.username.title": "Username",
+    "hue.gateway.group.title": "Group"
 }

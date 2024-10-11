@@ -1,4 +1,6 @@
 # Import StreamController modules
+from GtkHelper.GtkHelper import ComboRow
+
 from src.backend.PluginManager.ActionBase import ActionBase
 # Import python modules
 import os
@@ -7,7 +9,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw
+from gi.repository import Gtk, Adw, Pango
 
 from loguru import logger as log
 
@@ -32,7 +34,7 @@ class HueGroupAction(ActionBase):
     self.bridge_groups = self.plugin_base.backend.get_groups()
 
   def on_key_down(self) -> None:
-    log.info("Key down")
+    log.trace("Key Down")
     self.plugin_base.backend.toggle_group_lights(1)
 
   def on_key_up(self) -> None:
@@ -47,13 +49,21 @@ class HueGroupAction(ActionBase):
     self.bridge_ip_entry = Adw.EntryRow(title=self.plugin_base.lm.get("hue.gateway.ip.title"))
     self.bridge_user_entry = Adw.EntryRow(title=self.plugin_base.lm.get("hue.gateway.username.title"))
 
+    self.device_display_name = Gtk.ListStore.new([str])
+
+    self.device_A_row = ComboRow(title=self.plugin_base.lm.get("hue.gateway.group.title"),
+                                 model=self.device_display_name)
+    self.device_cell_renderer = Gtk.CellRendererText(ellipsize=Pango.EllipsizeMode.END, max_width_chars=60)
+    self.device_A_row.combo_box.pack_start(self.device_cell_renderer, True)
+    self.device_A_row.combo_box.add_attribute(self.device_cell_renderer, "text", 0)
+
     self.load_config_defaults()
 
     # Connect signals
     self.bridge_ip_entry.connect("notify::text", self.on_ip_changed)
     self.bridge_user_entry.connect("notify::text", self.on_username_changed)
 
-    return [self.bridge_ip_entry, self.bridge_user_entry]
+    return [self.bridge_ip_entry, self.bridge_user_entry, self.device_A_row]
 
   def load_config_defaults(self):
     """

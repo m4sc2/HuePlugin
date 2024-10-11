@@ -8,6 +8,14 @@ from phue import Bridge
 
 class Group:
   def __init__(self, group_name, status, brightness, group_id):
+    """
+    Internal Hue light group
+    Args:
+      group_name:  name of the group
+      status:      status of the lights on|off
+      brightness:  brightness of the lights
+      group_id:    group id in the bridge
+    """
     self.group_name = group_name
     self.status = status
     self.brightness = brightness
@@ -51,6 +59,12 @@ class HueBackend(BackendBase):
       return False
 
   def get_groups(self) -> list:
+    """
+    get all groups configured in the Hue Bridge.
+
+    Returns:
+      list of groups with id status and name of the group
+    """
     _groupList = []
     for group in self._bridge.groups:
       g = Group(group.name, group.on, 100, group.group_id)
@@ -60,11 +74,11 @@ class HueBackend(BackendBase):
 
   def toggle_group_lights(self, group_id: int) -> None:
     """
-    Toggle lights on the group.
+    Toggle lights in the group.
 
     Args:
-      self: the backend
-      group_id:  id of the group
+      self:       the backend
+      group_id:   id of the group
 
     Returns:
       None
