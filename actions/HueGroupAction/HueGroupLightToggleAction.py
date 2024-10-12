@@ -62,21 +62,31 @@ class HueGroupLightToggleAction(ActionBase):
     Returns: config entries as list
 
     """
+
+    _config_rows = []
+
     self.bridge_ip_entry = Adw.EntryRow(title=self.plugin_base.lm.get("hue.gateway.ip.title"))
     self.bridge_user_entry = Adw.EntryRow(title=self.plugin_base.lm.get("hue.gateway.username.title"))
 
-    if self.plugin_base.backend.is_connected() :
-      self.update_bridge_groups()
-
-    self.hue_group_row.set_title(self.plugin_base.lm.get("hue.gateway.group.title"))
-    self.load_config_defaults()
+    self.groups_entries = []
+    self.hue_group_row = ItemListComboRow(items=self.groups_entries)
 
     # Connect signals
     self.bridge_ip_entry.connect("notify::text", self.on_ip_changed)
+    _config_rows.append(self.bridge_ip_entry)
     self.bridge_user_entry.connect("notify::text", self.on_username_changed)
-    self.hue_group_row.connect("notify::selected", self.on_hue_group_change)
+    _config_rows.append(self.bridge_user_entry)
 
-    return [self.bridge_ip_entry, self.bridge_user_entry, self.hue_group_row]
+    if self.plugin_base.backend.is_connected() :
+      self.update_bridge_groups()
+      self.hue_group_row.set_title(self.plugin_base.lm.get("hue.gateway.group.title"))
+      self.hue_group_row.connect("notify::selected", self.on_hue_group_change)
+
+
+    self.load_config_defaults()
+    _config_rows.append(self.hue_group_row)
+
+    return _config_rows
 
   def update_bridge_groups(self):
     _bridge_groups = self.plugin_base.backend.get_groups()
@@ -109,13 +119,14 @@ class HueGroupLightToggleAction(ActionBase):
     self.bridge_user_entry.set_text(_username)  # Does not accept None
 
     if self.get_settings().get("HUE_GROUP", "") != "":
-      self.hue_group_row.set_selected_item_by_key(self.get_settings().get("HUE_GROUP", ""))
+      _groupid = self.get_settings().get("HUE_GROUP", "")
+      self.hue_group_row.set_selected_item_by_key(_groupid)
     else :
       if self.plugin_base.backend.is_connected():
         #store setting with the first group
         self.on_hue_group_change(self.hue_group_row)
 
-  def on_ip_changed(self, entry) -> None:
+  def on_ip_changed(self, entry, *args) -> None:
     settings = self.get_settings()
     settings["BRIDGE_IP"] = entry.get_text()
     self.set_settings(settings)
@@ -127,8 +138,6 @@ class HueGroupLightToggleAction(ActionBase):
     settings = self.get_settings()
     settings["HUE_GROUP"] = entry.get_selected_item().key
     self.set_settings(settings)
-    if self.plugin_base.backend.is_connected():
-      self.update_bridge_groups()
 
   def on_username_changed(self, entry, *args) -> None:
     settings = self.get_settings()
