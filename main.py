@@ -3,7 +3,7 @@ import os
 
 from src.backend.PluginManager.ActionHolder import ActionHolder
 from src.backend.PluginManager.PluginBase import PluginBase
-from .actions.HueGroupAction.HueGroupAction import HueGroupAction
+from .actions.HueGroupAction.HueGroupLightToggleAction import HueGroupLightToggleAction
 
 # Import actions
 
@@ -12,13 +12,13 @@ class HuePlugin(PluginBase):
         super().__init__()
         self.lm = self.locale_manager
         ## Launch backend
-        backend_path = os.path.join(self.PATH, "backend", "hue_assist.py")
+        backend_path = os.path.join(self.PATH, "backend", "hue_backend_assist.py")
         self.launch_backend(backend_path=backend_path, open_in_terminal=False)
 
         ## Register actions
         self.simple_action_holder = ActionHolder(
             plugin_base = self,
-            action_base = HueGroupAction,
+            action_base = HueGroupLightToggleAction,
             action_id = "m4sc2::HuePlugin", # Change this to your own plugin id
             action_name = "Hue Group Action",
         )

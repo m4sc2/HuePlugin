@@ -53,10 +53,13 @@ class HueBackend(BackendBase):
 
   def is_connected(self) -> bool:
     try:
-      self._bridge.connect()
+      self._bridge.get_api()
       return True
     except Exception as e:
       return False
+
+  def get_group_on_status(self, group_id: int) -> bool:
+    return self._bridge.get_group(group_id,'on')
 
   def get_groups(self) -> list:
     """
@@ -71,6 +74,12 @@ class HueBackend(BackendBase):
       log.trace(group.name + " " + str(group.on))
       _groupList.append(g)
     return _groupList
+
+  def get_ip(self) -> str:
+    return self._bridge_ip
+
+  def get_username(self) -> str:
+    return self._bridge_username
 
   def toggle_group_lights(self, group_id: int) -> None:
     """
