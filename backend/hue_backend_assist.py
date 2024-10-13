@@ -32,7 +32,7 @@ class HueBackend(BackendBase):
     self._bridge_ip: str = ""
     self._bridge_username: str = ""
 
-  def set_connection_details(self, host: str, username: str) -> None:
+  def connect(self, host: str, username: str) -> str:
     """
     Initialize the connection to the Hue Bridge.
 
@@ -41,15 +41,20 @@ class HueBackend(BackendBase):
         username:   username of the Hue Bridge
         host:       ip address of the Hue Bridge
 
-    Returns: None
+    Returns: CONNECTED in case of successful connection, else Exception to the connection establishment
 
     """
     self._bridge_ip = host
     self._bridge_username = username
-    if self._bridge_ip == "": return
-    if self._bridge_username == "": return
-    self._bridge = Bridge(ip=self._bridge_ip, username=self._bridge_username)
-    log.info(self._bridge.get_api())
+    if self._bridge_ip == "": return "MISSING_IP"
+    if self._bridge_username == "": return "MISSING_USERNAME"
+    try:
+      self._bridge = Bridge(ip=self._bridge_ip, username=self._bridge_username)
+      log.trace(self._bridge.get_api())
+    except Exception as e:
+      return "Exception while connecting to the Hue Bridge: " + str(e)
+
+    return "CONNECTED"
 
   def is_connected(self) -> bool:
     try:
@@ -62,6 +67,7 @@ class HueBackend(BackendBase):
     return self._bridge.get_group(group_id,'on')
 
   def get_groups(self) -> list:
+    log.trace("### Start - Loading Groups of the Hue Bridge ###")
     """
     get all groups configured in the Hue Bridge.
 
@@ -71,14 +77,24 @@ class HueBackend(BackendBase):
     _groupList = []
     for group in self._bridge.groups:
       g = Group(group.name, group.on, 100, group.group_id)
-      log.trace(group.name + " " + str(group.on))
+      log.trace("Add group {} (status={}) to group list" , group.name , str(group.on))
       _groupList.append(g)
+
+    log.trace("### End - Loading Groups of the Hue Bridge ###")
     return _groupList
 
   def get_ip(self) -> str:
+    """
+    Returns: returns the ip address of the Hue Bridge for the backend
+
+    """
     return self._bridge_ip
 
   def get_username(self) -> str:
+    """
+    Returns: username of the Hue Bridge for the backend
+
+    """
     return self._bridge_username
 
   def toggle_group_lights(self, group_id: int) -> None:
@@ -94,7 +110,7 @@ class HueBackend(BackendBase):
 
     """
     current_state: bool = self._bridge.get_group(group_id, 'on')
+    log.trace("switch group lights to {}", not current_state)
     self._bridge.set_group(group_id, 'on', not current_state)
-
 
 backend = HueBackend()
