@@ -1,4 +1,5 @@
 # Import StreamController modules
+from operator import index
 
 from GtkHelper.ItemListComboRow import ItemListComboRowListItem, ItemListComboRow
 
@@ -17,7 +18,7 @@ from loguru import logger as log
 class HueGroupLightToggleAction(ActionBase):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
-    self.groups_entries = None
+    self.groups_entries = []
     self.hue_group_row = None
     self.bridge_ip_entry = None
     self.bridge_user_entry = None
@@ -68,23 +69,25 @@ class HueGroupLightToggleAction(ActionBase):
     self.bridge_ip_entry = Adw.EntryRow(title=self.plugin_base.lm.get("hue.gateway.ip.title"))
     self.bridge_user_entry = Adw.EntryRow(title=self.plugin_base.lm.get("hue.gateway.username.title"))
 
-    self.groups_entries = []
-    self.hue_group_row = ItemListComboRow(items=self.groups_entries)
+    self.hue_group_row = ItemListComboRow(self.groups_entries)
+
 
     # Connect signals
-    self.bridge_ip_entry.connect("notify::text", self.on_ip_changed)
+
     _config_rows.append(self.bridge_ip_entry)
-    self.bridge_user_entry.connect("notify::text", self.on_username_changed)
     _config_rows.append(self.bridge_user_entry)
 
     if self.plugin_base.backend.is_connected() :
       self.update_bridge_groups()
       self.hue_group_row.set_title(self.plugin_base.lm.get("hue.gateway.group.title"))
-      self.hue_group_row.connect("notify::selected", self.on_hue_group_change)
 
 
     self.load_config_defaults()
     _config_rows.append(self.hue_group_row)
+
+    self.bridge_ip_entry.connect("notify::text", self.on_ip_changed)
+    self.hue_group_row.connect("notify::selected", self.on_hue_group_change)
+    self.bridge_user_entry.connect("notify::text", self.on_username_changed)
 
     return _config_rows
 
@@ -94,7 +97,8 @@ class HueGroupLightToggleAction(ActionBase):
     if _bridge_groups is not None:
       for Group in _bridge_groups:
         self.groups_entries.append(ItemListComboRowListItem(Group.group_id, Group.group_name))
-    self.hue_group_row = ItemListComboRow(items=self.groups_entries)
+    self.hue_group_row = ItemListComboRow(self.groups_entries)
+
 
   def load_config_defaults(self):
     """
@@ -120,7 +124,8 @@ class HueGroupLightToggleAction(ActionBase):
 
     if self.get_settings().get("HUE_GROUP", "") != "":
       _groupid = self.get_settings().get("HUE_GROUP", "")
-      self.hue_group_row.set_selected_item_by_key(_groupid)
+      self.set_active_group(_groupid)
+
     else :
       if self.plugin_base.backend.is_connected():
         #store setting with the first group
@@ -135,6 +140,7 @@ class HueGroupLightToggleAction(ActionBase):
       self.update_bridge_groups()
 
   def on_hue_group_change(self, entry, *args) -> None:
+    log.info("Hue Bridge Group Changed")
     settings = self.get_settings()
     settings["HUE_GROUP"] = entry.get_selected_item().key
     self.set_settings(settings)
@@ -157,3 +163,12 @@ class HueGroupLightToggleAction(ActionBase):
         _icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
 
     self.set_media(media_path=_icon_path, size=0.60)
+
+  def set_active_group(self, group_id) -> int:
+    log.info(group_id)
+    for idx, i in enumerate(self.hue_group_row.get_model()):
+      log.info(i.key)
+      if i.key == group_id:
+        self.hue_group_row.set_selected(idx)
+
+    return 0
