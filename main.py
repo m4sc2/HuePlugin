@@ -1,8 +1,6 @@
 # Import StreamController modules
 import os
 
-
-
 from src.backend.DeckManagement.InputIdentifier import Input
 from src.backend.PluginManager.ActionHolder import ActionHolder
 from src.backend.PluginManager.ActionInputSupport import ActionInputSupport
@@ -10,6 +8,7 @@ from src.backend.PluginManager.PluginBase import PluginBase
 from .actions.HueGroupAction.HueGroupLightToggleAction import HueGroupLightToggleAction
 
 from gi.repository import Gtk
+
 
 # Import actions
 
@@ -23,11 +22,11 @@ class HuePlugin(PluginBase):
 
         ## Register actions
         self.simple_action_holder = ActionHolder(
-            plugin_base = self,
-            action_base = HueGroupLightToggleAction,
-            action_id = "m4sc2::HuePluginGroupLightsToggle", # Change this to your own plugin id
-            action_name = "Hue Group Lights Toggle",
-            action_support= {
+            plugin_base=self,
+            action_base=HueGroupLightToggleAction,
+            action_id="m4sc2::HuePluginGroupLightsToggle",  # Change this to your own plugin id
+            action_name="Hue Group Action - Lights Toggle",
+            action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
             }
         )
@@ -35,12 +34,11 @@ class HuePlugin(PluginBase):
 
         # Register plugin
         self.register(
-            plugin_name = "Hue Plugin",
-            github_repo = "https://github.com/m4sc2/HuePlugin",
-            plugin_version = "1.0.0",
-            app_version = "1.1.1-alpha"
+            plugin_name="Hue Plugin",
+            github_repo="https://github.com/m4sc2/HuePlugin",
+            plugin_version="1.0.0",
+            app_version="1.1.1-alpha"
         )
-
 
     def get_selector_icon(self) -> Gtk.Widget:
         return Gtk.Image(icon_name="preferences-desktop-color")
