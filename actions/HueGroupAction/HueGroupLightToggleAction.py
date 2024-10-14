@@ -1,12 +1,8 @@
 # Import StreamController modules
-from operator import index
-
-from gi.repository.Adw import PreferencesGroup
 
 from ..HueGroupAction.HueGroupBasicAction import HueGroupBasicAction
 from GtkHelper.ItemListComboRow import ItemListComboRowListItem, ItemListComboRow
 
-from src.backend.PluginManager.ActionBase import ActionBase
 # Import python modules
 import os
 # Import gtk modules - used for the config rows
@@ -80,21 +76,6 @@ class HueGroupLightToggleAction(HueGroupBasicAction):
 
     return [*_config_rows]
 
-  def update_bridge_groups(self):
-    """
-    function to update the bridge groups will add all groups from the hue bridge to the combo box for selection of the
-    group
-    Returns:
-
-    """
-    _bridge_groups = self.plugin_base.backend.get_groups()
-    self.groups_entries = []
-    if _bridge_groups is not None:
-      for Group in _bridge_groups:
-        self.groups_entries.append(ItemListComboRowListItem(Group.group_id, Group.group_name))
-    self.hue_group_row = ItemListComboRow(self.groups_entries)
-
-
   def load_config_action(self):
     """
     loads the already configured values
@@ -112,12 +93,6 @@ class HueGroupLightToggleAction(HueGroupBasicAction):
         self.on_hue_group_change(self.hue_group_row)
 
     log.trace("### End - Load Config Defaults ###")
-
-  def on_hue_group_change(self, entry, *args) -> None:
-    log.info("Hue Bridge Group Changed")
-    settings = self.get_settings()
-    settings["HUE_GROUP"] = entry.get_selected_item().key
-    self.set_settings(settings)
 
   def update_icon(self, state_new) -> None:
     """
