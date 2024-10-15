@@ -2,7 +2,7 @@
 
 from gi.repository.Adw import PreferencesGroup
 
-from DATA.data.plugins.com_hue_plugin.actions.HueBasicAction.HueAssistBasicAction import HueAssistBasicAction
+from ..HueBasicAction.HueAssistBasicAction import HueAssistBasicAction
 from GtkHelper.ItemListComboRow import ItemListComboRowListItem, ItemListComboRow
 
 # Import python modules

@@ -5,6 +5,7 @@ from src.backend.DeckManagement.InputIdentifier import Input
 from src.backend.PluginManager.ActionHolder import ActionHolder
 from src.backend.PluginManager.ActionInputSupport import ActionInputSupport
 from src.backend.PluginManager.PluginBase import PluginBase
+from .actions.HueGroupAction.HueGroupLightBrightnessAction import HueGroupLightBrightnessAction
 from .actions.HueGroupAction.HueGroupLightToggleAction import HueGroupLightToggleAction
 
 from gi.repository import Gtk
@@ -26,6 +27,17 @@ class HuePlugin(PluginBase):
             action_base=HueGroupLightToggleAction,
             action_id="m4sc2::HuePluginGroupLightsToggle",  # Change this to your own plugin id
             action_name="Hue Group Action - Lights Toggle",
+            action_support={
+                Input.Key: ActionInputSupport.SUPPORTED,
+            }
+        )
+        self.add_action_holder(self.simple_action_holder)
+
+        self.simple_action_holder = ActionHolder(
+            plugin_base=self,
+            action_base=HueGroupLightBrightnessAction,
+            action_id="m4sc2::HuePluginGroupLightsBrightness",  # Change this to your own plugin id
+            action_name="Hue Group Action - Lights Brightness Change",
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
             }

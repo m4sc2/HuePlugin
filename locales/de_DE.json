@@ -3,6 +3,8 @@
     "hue.gateway.connection.preferences.title": "Bridge - Einstellungen",
     "hue.gateway.connection.preferences.settings" : "Zugangsdaten",
     "hue.action.toggle.group.title": "Gruppen - Einstellung",
+    "hue.action.group.brightness.adjust": "Änderung Helligkeit",
+    "hue.action.settings.title": "Funktion - Einstellung",
     "hue.gateway.ip.title": "IP",
     "hue.gateway.username.title": "Benutzer",
     "hue.gateway.group.title": "Gruppe"
