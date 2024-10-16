@@ -3,7 +3,6 @@ from gi.repository.Adw import PreferencesGroup
 from GtkHelper.GtkHelper import ScaleRow
 
 from ..HueGroupAction.HueGroupBasicAction import HueGroupBasicAction
-from GtkHelper.ItemListComboRow import ItemListComboRowListItem, ItemListComboRow
 
 # Import python modules
 import os
@@ -18,6 +17,7 @@ from loguru import logger as log
 class HueGroupLightBrightnessAction(HueGroupBasicAction):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
+    self._adjustment_value = None
     self.brightness_adjust_scale = ScaleRow
 
   def on_ready(self) -> None:
@@ -26,11 +26,11 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     Returns: None
 
     """
-    icon_path = os.path.join(self.plugin_base.PATH, "assets", "light_on.png")
-    self.set_media(media_path=icon_path, size=0.60)
+    self.load_config_action()
     settings = self.get_settings()
     if not self.plugin_base.backend.is_connected() :
       self.plugin_base.backend.connect(settings.get("BRIDGE_IP", ""), settings.get("BRIDGE_USER", ""))
+
 
   def on_key_down(self) -> None:
     """
@@ -40,7 +40,15 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     """
     log.trace("Key Down")
     if self.plugin_base.backend.is_connected() :
-      self.plugin_base.backend.toggle_group_lights(self.get_settings().get("HUE_GROUP", -1))
+      _groupId = (super().get_settings().get("HUE_GROUP", -1))
+      _newBrightness = self.plugin_base.backend.get_brightness(_groupId)
+      _newBrightness = _newBrightness + self._adjustment_value
+
+      if _newBrightness > 254 :
+        _newBrightness = 254
+      elif _newBrightness < 1 :
+        _newBrightness = 1
+      self.plugin_base.backend.set_brightness(self.get_settings().get("HUE_GROUP", -1), _newBrightness)
     else:
       log.error("Hue Bridge Not Connected")
 
@@ -62,6 +70,7 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     self.brightness_adjust_scale.scale.set_draw_value(True)
     self.brightness_adjust_scale.scale.connect("value-changed", self.on_brightness_adjust_changed)
 
+    self.brightness_adjust_scale.scale.set_value(self._adjustment_value)
     _config_rows = super().get_config_rows()
 
     _group = PreferencesGroup()
@@ -69,13 +78,15 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     _group.set_margin_top(20)
     _group.add(self.brightness_adjust_scale)
 
-
-
     return [*_config_rows, _group]
 
-  def on_brightness_adjust_changed(self):
+  def on_brightness_adjust_changed(self, entry, *args):
     log.trace("Brightness Adjust")
-
+    settings = self.get_settings()
+    self._adjustment_value = entry.get_value()
+    settings["ADJUSTMENT_VALUE"] = self._adjustment_value
+    self.set_settings(settings)
+    self.update_icon()
 
   def load_config_action(self):
     """
@@ -84,24 +95,22 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
 
     """
     log.trace("### Start - Load Config Defaults ###")
-
+    self._adjustment_value = self.get_settings().get("ADJUSTMENT_VALUE", 0)
+    self.update_icon()
     log.trace("### End - Load Config Defaults ###")
 
-  def update_icon(self, state_new) -> None:
+  def update_icon(self) -> None:
     """
-    update the icon based on the state of the group
-    Args:
-      state_new: new state of the group action
+    update the icon based on the scale value of the group
 
     Returns: None
 
     """
-    match state_new:
-      case 0:
-        _icon_path = os.path.join(self.plugin_base.PATH, "assets", "light_decrease.png")
-      case 1:
-        _icon_path = os.path.join(self.plugin_base.PATH, "assets", "light_increase.png")
-      case _:
-        _icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
+
+    if self._adjustment_value > 0:
+      _icon_path = os.path.join(self.plugin_base.PATH, "assets", "light_increase.png")
+    else:
+      _icon_path = os.path.join(self.plugin_base.PATH, "assets", "light_decrease.png")
+
     self.set_media(media_path=_icon_path, size=0.60)
 

@@ -113,4 +113,14 @@ class HueBackend(BackendBase):
     log.trace("switch group lights to {}", not current_state)
     self._bridge.set_group(group_id, 'on', not current_state)
 
+  def set_brightness(self, group_id:int, brightness: int) -> None:
+    self._bridge.set_group(group_id,'bri', brightness)
+    log.trace("Set brightness of group {} = {}", group_id, brightness)
+
+  def get_brightness(self, group_id:int) -> int:
+    _brightness = self._bridge.get_group(group_id, 'bri')
+    log.trace("Get brightness of group {} = {}", group_id, _brightness)
+    return _brightness
+
+
 backend = HueBackend()
