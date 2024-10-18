@@ -19,10 +19,12 @@ from loguru import logger as log
 class HueAssistBasicAction(ActionBase):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
+    self._username = None
     self.bridge_ip_entry = EntryRow
     self.bridge_user_entry = PasswordEntryRow
     self.connection_status_entry = EntryRow
     self.settings_expander_entry: ExpanderRow
+    self._ip = None
 
   def get_config_rows(self) -> list:
     """
@@ -57,28 +59,32 @@ class HueAssistBasicAction(ActionBase):
 
     return [group]
 
+  def load_settings(self):
+    self._ip = self.get_settings().get("BRIDGE_IP", "")
+    self._username = self.get_settings().get("BRIDGE_USER", "")
+
+    # in case of a new created widget but the backend for the hue bridge is already initialized
+    # load data from the backend and store it to the settings
+    if self._ip == "" and self._username == "" and self.plugin_base.backend.is_connected():
+      self._ip = self.plugin_base.backend.get_ip()
+      self._username = self.plugin_base.backend.get_username()
+      settings = self.get_settings()
+      settings["BRIDGE_IP"] = self._ip
+      settings["BRIDGE_USER"] = self._username
+      self.set_settings(settings)
+
   def load_config_defaults(self):
     """
     loads the already configured values
     Returns: already configured values or defaults
 
     """
+    self.load_settings()
+
     log.trace("### Start - Load Config Defaults ###")
-    _ip = self.get_settings().get("BRIDGE_IP", "")
-    _username = self.get_settings().get("BRIDGE_USER", "")
 
-    # in case of a new created widget but the backend for the hue bridge is already initialized
-    # load data from the backend and store it to the settings
-    if _ip == "" and _username == "" and self.plugin_base.backend.is_connected():
-      _ip = self.plugin_base.backend.get_ip()
-      _username = self.plugin_base.backend.get_username()
-      settings = self.get_settings()
-      settings["BRIDGE_IP"] = _ip
-      settings["BRIDGE_USER"] = _username
-      self.set_settings(settings)
-
-    self.bridge_ip_entry.set_text(_ip)  # Does not accept None
-    self.bridge_user_entry.set_text(_username)  # Does not accept None
+    self.bridge_ip_entry.set_text(self._ip)  # Does not accept None
+    self.bridge_user_entry.set_text(self._username)  # Does not accept None
 
     log.trace("### End - Load Config Defaults ###")
 

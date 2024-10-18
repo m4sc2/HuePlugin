@@ -17,6 +17,7 @@ from loguru import logger as log
 class HueGroupBasicAction(HueAssistBasicAction):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
+    self._groupId = None
     self.groups_entries = []
     self.hue_group_row = ItemListComboRow
 
@@ -35,7 +36,7 @@ class HueGroupBasicAction(HueAssistBasicAction):
       self.update_bridge_groups()
       self.hue_group_row.set_title(self.plugin_base.lm.get("hue.gateway.group.title"))
 
-    self.load_config_action()
+    self.load_config_row_settings()
 
     self.hue_group_row.connect("notify::selected", self.on_hue_group_change)
 
@@ -60,8 +61,11 @@ class HueGroupBasicAction(HueAssistBasicAction):
         self.groups_entries.append(ItemListComboRowListItem(Group.group_id, Group.group_name))
     self.hue_group_row = ItemListComboRow(self.groups_entries)
 
+  def load_settings(self):
+    super().load_settings()
+    self._groupId = self.get_settings().get("HUE_GROUP", "")
 
-  def load_config_action(self):
+  def load_config_row_settings(self):
     """
     loads the already configured values
     Returns: already configured values or defaults
@@ -69,9 +73,10 @@ class HueGroupBasicAction(HueAssistBasicAction):
     """
     log.trace("### Start - Load Config Defaults ###")
 
-    if self.get_settings().get("HUE_GROUP", "") != "":
-      _group_id = self.get_settings().get("HUE_GROUP", "")
-      self.set_active_group(_group_id)
+    self.load_settings()
+
+    if self._groupId is not None:
+      self.set_active_group(self._groupId)
     else :
       if self.plugin_base.backend.is_connected():
         #store setting with the first group
@@ -83,6 +88,7 @@ class HueGroupBasicAction(HueAssistBasicAction):
     log.info("Hue Bridge Group Changed")
     settings = self.get_settings()
     settings["HUE_GROUP"] = entry.get_selected_item().key
+    self._groupId = self.get_settings().get("HUE_GROUP", "")
     self.set_settings(settings)
 
   def set_active_group(self, group_id) -> None:

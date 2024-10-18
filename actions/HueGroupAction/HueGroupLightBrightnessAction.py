@@ -26,7 +26,7 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     Returns: None
 
     """
-    self.load_config_action()
+    self.load_config_row_settings()
     settings = self.get_settings()
     if not self.plugin_base.backend.is_connected() :
       self.plugin_base.backend.connect(settings.get("BRIDGE_IP", ""), settings.get("BRIDGE_USER", ""))
@@ -40,15 +40,17 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     """
     log.trace("Key Down")
     if self.plugin_base.backend.is_connected() :
-      _groupId = (super().get_settings().get("HUE_GROUP", -1))
-      _newBrightness = self.plugin_base.backend.get_brightness(_groupId)
-      _newBrightness = _newBrightness + self._adjustment_value
-
-      if _newBrightness > 254 :
-        _newBrightness = 254
-      elif _newBrightness < 1 :
-        _newBrightness = 1
-      self.plugin_base.backend.set_brightness(self.get_settings().get("HUE_GROUP", -1), _newBrightness)
+      _newBrightness = self.plugin_base.backend.get_brightness(self._groupId)
+      if _newBrightness is not None :
+        _newBrightness = _newBrightness + self._adjustment_value
+        _newBrightness = int(round(_newBrightness))
+        if _newBrightness > 254 :
+          _newBrightness = 254
+        elif _newBrightness < 1 :
+          _newBrightness = 1
+        self.plugin_base.backend.set_brightness(self._groupId, _newBrightness)
+      else:
+        log.trace("Group not on")
     else:
       log.error("Hue Bridge Not Connected")
 
@@ -88,7 +90,8 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     self.set_settings(settings)
     self.update_icon()
 
-  def load_config_action(self):
+  def load_config_row_settings(self):
+    super().load_settings()
     """
     loads the already configured values
     Returns: already configured values or defaults
