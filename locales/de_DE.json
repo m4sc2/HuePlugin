@@ -1,6 +1,6 @@
 {
     "plugin.name": "Hue",
-    "hue.gateway.connection.preferences.title": "Bridge - Einstellungen",
+    "hue.gateway.connection.preferences.title": "HueBridge - Einstellungen",
     "hue.gateway.connection.preferences.settings" : "Zugangsdaten",
     "hue.action.toggle.group.title": "Gruppen - Einstellung",
     "hue.action.group.brightness.adjust": "Änderung Helligkeit",

@@ -1,6 +1,6 @@
 {
     "plugin.name": "Hue",
-    "hue.gateway.connection.preferences.title": "Bridge Settings",
+    "hue.gateway.connection.preferences.title": "HueBridge Settings",
     "hue.gateway.connection.preferences.settings" : "Credentials",
     "hue.action.toggle.group.title": "Group Toggle Settings",
     "hue.action.settings.title": "Action - Settings",

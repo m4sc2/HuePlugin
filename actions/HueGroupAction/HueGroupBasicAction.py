@@ -40,6 +40,7 @@ class HueGroupBasicAction(HueAssistBasicAction):
 
     self.hue_group_row.connect("notify::selected", self.on_hue_group_change)
 
+
     _group = PreferencesGroup()
     _group.set_title(self.plugin_base.lm.get("hue.action.toggle.group.title"))
     _group.set_margin_top(20)

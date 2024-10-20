@@ -1,14 +1,11 @@
 # Import StreamController modules
-from operator import index
 
-from gi.repository.Adw import EntryRow, ExpanderRow, PasswordEntryRow, PreferencesGroup, SwitchRow
-from GtkHelper.ItemListComboRow import ItemListComboRowListItem, ItemListComboRow
-
-from src.backend.PluginManager.ActionBase import ActionBase
 # Import python modules
-import os
 # Import gtk modules - used for the config rows
 import gi
+from gi.repository.Adw import EntryRow, ExpanderRow, PasswordEntryRow, PreferencesGroup
+
+from src.backend.PluginManager.ActionBase import ActionBase
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
@@ -19,12 +16,12 @@ from loguru import logger as log
 class HueAssistBasicAction(ActionBase):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
+    self.settings_expander_entry = None
+    self._ip = None
     self._username = None
     self.bridge_ip_entry = EntryRow
     self.bridge_user_entry = PasswordEntryRow
     self.connection_status_entry = EntryRow
-    self.settings_expander_entry: ExpanderRow
-    self._ip = None
 
   def get_config_rows(self) -> list:
     """
@@ -92,10 +89,16 @@ class HueAssistBasicAction(ActionBase):
     settings = self.get_settings()
     settings["BRIDGE_IP"] = entry.get_text()
     self.set_settings(settings)
-    self.plugin_base.backend.connect(settings.get("BRIDGE_IP", ""), settings.get("BRIDGE_USER", ""))
+    self._ip = entry.get_text()
+    self.connect_to_bridge()
 
   def on_username_changed(self, entry, *args) -> None:
     settings = self.get_settings()
     settings["BRIDGE_USER"] = entry.get_text()
     self.set_settings(settings)
-    self.plugin_base.backend.connect(settings.get("BRIDGE_IP", ""), settings.get("BRIDGE_USER", ""))
+    self._username = entry.get_text()
+    self.connect_to_bridge()
+
+  def connect_to_bridge(self) -> None:
+    if not self.plugin_base.backend.is_connected():
+      self.plugin_base.backend.connect(self._ip, self._username)

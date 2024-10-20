@@ -27,7 +27,7 @@ class HueGroupLightToggleAction(HueGroupBasicAction):
     """
     on = False
     if self.plugin_base.backend.is_connected() :
-      if self.get_settings().get("HUE_GROUP", -1) != -1:
+      if self._groupId != -1:
         on = self.plugin_base.backend.get_group_on_status(self.get_settings().get("HUE_GROUP", -1))
     else:
       log.error("Hue Bridge Not Connected")
@@ -45,11 +45,10 @@ class HueGroupLightToggleAction(HueGroupBasicAction):
     Returns: None
 
     """
+    super().load_settings()
     icon_path = os.path.join(self.plugin_base.PATH, "assets", "light_on.png")
     self.set_media(media_path=icon_path, size=0.60)
-    settings = self.get_settings()
-    if not self.plugin_base.backend.is_connected() :
-      self.plugin_base.backend.connect(settings.get("BRIDGE_IP", ""), settings.get("BRIDGE_USER", ""))
+    self.connect_to_bridge()
 
   def on_key_down(self) -> None:
     """
@@ -59,7 +58,7 @@ class HueGroupLightToggleAction(HueGroupBasicAction):
     """
     log.trace("Key Down")
     if self.plugin_base.backend.is_connected() :
-      self.plugin_base.backend.toggle_group_lights(self.get_settings().get("HUE_GROUP", -1))
+      self.plugin_base.backend.toggle_group_lights(self._groupId)
     else:
       log.error("Hue Bridge Not Connected")
 
