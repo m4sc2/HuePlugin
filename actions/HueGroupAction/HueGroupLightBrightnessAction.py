@@ -26,7 +26,7 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     Returns: None
 
     """
-    self.load_config_row_settings()
+    self.load_settings()
     settings = self.get_settings()
     if not self.plugin_base.backend.is_connected() :
       self.plugin_base.backend.connect(settings.get("BRIDGE_IP", ""), settings.get("BRIDGE_USER", ""))
@@ -61,6 +61,8 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
 
     """
 
+    self.load_config_row_settings()
+
     self.brightness_adjust_scale = ScaleRow(title=self.plugin_base.lm.get("hue.action.group.brightness.adjust"),
                                             value=0,
                                             min=-50,
@@ -90,16 +92,27 @@ class HueGroupLightBrightnessAction(HueGroupBasicAction):
     self.set_settings(settings)
     self.update_icon()
 
-  def load_config_row_settings(self):
-    super().load_settings()
+  def load_settings(self):
     """
     loads the already configured values
     Returns: already configured values or defaults
 
     """
-    log.trace("### Start - Load Config Defaults ###")
+    super().load_settings()
     self._adjustment_value = self.get_settings().get("ADJUSTMENT_VALUE", 0)
     self.update_icon()
+
+  def load_config_row_settings(self):
+    """
+    loads the already configured values
+    Returns: already configured values or defaults
+
+    """
+    self.load_settings()
+    super().load_config_row_settings()
+
+    log.trace("### Start - Load Config Defaults ###")
+
     log.trace("### End - Load Config Defaults ###")
 
   def update_icon(self) -> None:

@@ -54,6 +54,11 @@ class HueAssistBasicAction(ActionBase):
     return [group]
 
   def load_settings(self):
+    """
+    loads the already configured values
+    Returns: already configured values or defaults
+
+    """
     self._ip = self.get_settings().get("BRIDGE_IP", "")
     self._username = self.get_settings().get("BRIDGE_USER", "")
 

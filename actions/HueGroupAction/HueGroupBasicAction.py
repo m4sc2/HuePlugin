@@ -39,6 +39,8 @@ class HueGroupBasicAction(HueAssistBasicAction):
 
     self.hue_group_row.connect("notify::selected", self.on_hue_group_change)
 
+    if self._groupId is not None:
+      self.set_active_group(self._groupId)
 
     _group = PreferencesGroup()
     _group.set_title(self.plugin_base.lm.get("hue.action.toggle.group.title"))
@@ -75,9 +77,7 @@ class HueGroupBasicAction(HueAssistBasicAction):
 
     self.load_settings()
 
-    if self._groupId is not None:
-      self.set_active_group(self._groupId)
-    else :
+    if self._groupId is None:
       if self.plugin_base.backend.is_connected():
         #store setting with the first group
         self.on_hue_group_change(self.hue_group_row)
