@@ -19,8 +19,6 @@ class HueAssistBasicAction(ActionBase):
     self.settings_expander_entry = None
     self._ip = None
     self._username = None
-    self.bridge_ip_entry = EntryRow
-    self.bridge_user_entry = PasswordEntryRow
     self.connection_status_entry = EntryRow
 
   def get_config_rows(self) -> list:
@@ -35,8 +33,7 @@ class HueAssistBasicAction(ActionBase):
 
     self.connection_status_entry = EntryRow(title="Connection status:")
     self.connection_status_entry.set_editable(False)
-    self.connection_status_entry.set_text(
-      "CONNECTED" if self.plugin_base.backend.is_connected() else "NOT_CONNECTED")
+    self.connection_status_entry.set_text("CONNECTED" if self.plugin_base.backend.is_connected() else "NOT_CONNECTED")
 
     self.load_config_defaults()
 
@@ -80,8 +77,8 @@ class HueAssistBasicAction(ActionBase):
 
     log.trace("### Start - Load Config Defaults ###")
 
-    self.bridge_ip_entry.set_text(self._ip)  # Does not accept None
-    self.bridge_user_entry.set_text(self._username)  # Does not accept None
+    self.bridge_ip_entry.set_text(text=self._ip)  # Does not accept None
+    self.bridge_user_entry.set_text(text=self._username)  # Does not accept None
 
     log.trace("### End - Load Config Defaults ###")
 

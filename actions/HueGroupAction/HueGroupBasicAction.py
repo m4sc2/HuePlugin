@@ -1,13 +1,11 @@
 # Import StreamController modules
-
-from gi.repository.Adw import PreferencesGroup
-
-from ..HueBasicAction.HueAssistBasicAction import HueAssistBasicAction
-from GtkHelper.ItemListComboRow import ItemListComboRowListItem, ItemListComboRow
-
 # Import python modules
 # Import gtk modules - used for the config rows
 import gi
+from gi.repository.Adw import PreferencesGroup
+
+from GtkHelper.ItemListComboRow import ItemListComboRowListItem, ItemListComboRow
+from ..HueBasicAction.HueAssistBasicAction import HueAssistBasicAction
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
@@ -17,9 +15,10 @@ from loguru import logger as log
 class HueGroupBasicAction(HueAssistBasicAction):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
+    self.hue_group_row = None
     self._groupId = None
     self.groups_entries = []
-    self.hue_group_row = ItemListComboRow
+
 
   def get_config_rows(self) -> list:
     """
@@ -86,7 +85,7 @@ class HueGroupBasicAction(HueAssistBasicAction):
     log.trace("### End - Load Config Defaults ###")
 
   def on_hue_group_change(self, entry, *args) -> None:
-    log.info("Hue Bridge Group Changed")
+    log.info("Hue Bridge Group Changed {}", args)
     settings = self.get_settings()
     settings["HUE_GROUP"] = entry.get_selected_item().key
     self._groupId = self.get_settings().get("HUE_GROUP", "")
@@ -102,8 +101,8 @@ class HueGroupBasicAction(HueAssistBasicAction):
 
     """
     log.trace("try to set active group to group_id ({})", group_id)
-    for idx, i in enumerate(self.hue_group_row.get_model()):
+    for idx, i in enumerate(self.hue_group_row.get_model()): # type: ItemListComboRowListItem
       if i.key == group_id:
-        self.hue_group_row.set_selected(idx)
+        self.hue_group_row.set_selected(position=idx)
         log.trace("finished - set active group to {}({})", i.name, group_id)
         return
