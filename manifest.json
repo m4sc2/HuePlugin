@@ -1,6 +1,6 @@
 {
-    "version": "",
-    "thumbnail": "",
-    "id": "",
-    "name": ""
+    "version": "0.0.1",
+    "thumbnail": "assets/HuePlugin.png",
+    "id": "de_m4sc2_hue_plugin",
+    "name": "Hue Assist for StreamController"
 }

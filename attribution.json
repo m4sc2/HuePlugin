@@ -1,9 +1,9 @@
 {
     "generic": {
-        "copyright": "",
-        "original-url": "",
-        "license": "",
-        "license-url": "",
-        "description": ""
+        "copyright": "m4sc2",
+        "original-url": "https://github.com/m4sc2/HuePlugin",
+        "license": "MIT",
+        "license-url": "https://opensource.org/licenses/MIT",
+        "description": "Interact with Hue-Gateway via StreamController"
     }
 }
