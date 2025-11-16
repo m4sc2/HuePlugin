@@ -7,5 +7,7 @@
     "hue.action.settings.title": "Funktion - Einstellung",
     "hue.gateway.ip.title": "IP",
     "hue.gateway.username.title": "Benutzer",
-    "hue.gateway.group.title": "Gruppe"
+    "hue.gateway.group.title": "Gruppe",
+    "hue.gateway.scene.title": "Szenen",
+    "hue.action.toggle.scene.title": "Szenen - Einstellung"
 }

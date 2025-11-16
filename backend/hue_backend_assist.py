@@ -21,6 +21,19 @@ class Group:
     self.brightness = brightness
     self.group_id = group_id
 
+class Scene:
+  def __init__(self, scene_name, group, scene_id):
+    """
+    Internal Hue light group
+    Args:
+      scene_name:   name of the scene
+      group:        assigned group id
+      scene_id:     id of the scene in the bridge
+    """
+    self.scene_name = scene_name
+    self.group = group
+    self.scene_id = scene_id
+
   def __str__(self):
     return f"{self.group_name}({self.status}) - groupId: {self.group_id} - brightness: {self.brightness}"
 
@@ -83,6 +96,23 @@ class HueBackend(BackendBase):
     log.trace("### End - Loading Groups of the Hue Bridge ###")
     return _groupList
 
+  def get_scenes(self) -> list:
+    log.trace("### Start - Loading Scenes of the Hue Bridge ###")
+    """
+    get all scenes configured in the Hue Bridge.
+
+    Returns:
+      list of scenes with id and name of the group
+    """
+    _sceneList = []
+    for scene in self._bridge.scenes:
+      g = Scene(scene.name, scene.group, scene.scene_id)
+      log.trace("Add scene {} (status={}) to group list" , scene.name , str(scene.scene_id))
+      _sceneList.append(g)
+
+    log.trace("### End - Loading Scenes of the Hue Bridge ###")
+    return _sceneList
+
   def get_ip(self) -> str:
     """
     Returns: returns the ip address of the Hue Bridge for the backend
@@ -112,6 +142,23 @@ class HueBackend(BackendBase):
     current_state: bool = self._bridge.get_group(group_id, 'on')
     log.trace("switch group lights to {}", not current_state)
     self._bridge.set_group(group_id, 'on', not current_state)
+
+  def activate_scene(self, group_id: int, scene_id: int) -> None:
+    """
+    Toggle lights in the group.
+    Args:
+     self: the backend
+     group_id:   id of the group
+
+    Returns:
+     None
+     :param group_id:
+     :param scene_id:
+
+    """
+    self._bridge.activate_scene(group_id, scene_id)
+    log.trace("Activate scene {} in group {}", scene_id, group_id)
+
 
   def set_brightness(self, group_id:int, brightness: int) -> None:
     self._bridge.set_group(group_id,'bri', brightness)

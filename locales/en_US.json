@@ -7,5 +7,7 @@
     "hue.action.group.brightness.adjust": "Brightness Change",
     "hue.gateway.ip.title": "IP",
     "hue.gateway.username.title": "Username",
-    "hue.gateway.group.title": "Group"
+    "hue.gateway.group.title": "Group",
+    "hue.gateway.scene.title": "Scenes",
+    "hue.action.toggle.scene.title": "Scene - Settings"
 }
